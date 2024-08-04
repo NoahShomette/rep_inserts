@@ -1,0 +1,50 @@
+[package]
+name = "rep_inserts"
+version = "0.1.0"
+edition = "2021"
+
+# Enable a small amount of optimization in debug mode
+[profile.dev]
+opt-level = 1
+
+# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
+[profile.dev.package."*"]
+opt-level = 3
+
+[features]
+# Bevy defaults minus audio and some other not needed things
+# see https://github.com/bevyengine/bevy/blob/main/Cargo.toml#L31-L54
+default = [
+    "bevy/animation",
+    "bevy/bevy_asset",
+    "bevy/bevy_audio",
+    "bevy/bevy_gilrs",
+    "bevy/bevy_scene",
+    "bevy/bevy_winit",
+    "bevy/bevy_core_pipeline",
+    "bevy/bevy_pbr",
+    "bevy/bevy_gltf",
+    "bevy/bevy_render",
+    "bevy/bevy_sprite",
+    "bevy/bevy_text",
+    "bevy/bevy_ui",
+    "bevy/multi_threaded",
+    "bevy/png",
+    "bevy/hdr",
+    "bevy/vorbis",
+    "bevy/x11",
+    "bevy/bevy_gizmos",
+    "bevy/android_shared_stdcxx",
+    "bevy/tonemapping_luts",
+    "bevy/default_font",
+    "bevy/webgl2",
+    "bevy/bevy_debug_stepping",
+]
+
+
+[dependencies]
+bevy = { version = "0.14.1", default-features = false }
+bevy_replicon = "0.27.0"
+bevy_replicon_renet = { version = "0.4.0", features = ['renet_transport'] }
+serde = "1.0.164"
+bevy-inspector-egui = { version = "0.25.1" }
