@@ -1,8 +1,11 @@
-use bevy::{color::palettes, prelude::*};
+use bevy::{
+    color::palettes, core_pipeline::core_2d::graph::input, input::keyboard::KeyboardInput,
+    prelude::*,
+};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_replicon::{
     core::{replication_rules::AppRuleExt, Replicated},
-    prelude::{ParentSync, RepliconChannels},
+    prelude::{has_authority, ParentSync, RepliconChannels},
     RepliconPlugins,
 };
 use bevy_replicon_renet::{
@@ -40,6 +43,7 @@ fn main() {
         .add_systems(
             Update,
             (
+                change_marker.run_if(has_authority),
                 add_children_client,
                 apply_deferred,
                 update_ui_text_and_count,
@@ -148,7 +152,7 @@ fn connect_client(commands: &mut Commands, channels: &Res<RepliconChannels>) -> 
 }
 
 fn add_children_client(
-    mut counter: Query<(Entity, &Marker), Without<Children>>,
+    counter: Query<(Entity, &Marker), Without<Children>>,
     mut commands: Commands,
 ) {
     for (entity, _) in counter.iter() {
@@ -159,7 +163,7 @@ fn add_children_client(
 }
 
 fn update_ui_text_and_count(
-    mut counter: Query<(&Marker, &Children), Added<Marker>>,
+    mut counter: Query<(&Marker, &Children), Changed<Marker>>,
     mut text: Query<&mut Text>,
 ) {
     let Ok(mut counter) = counter.get_single_mut() else {
@@ -174,4 +178,12 @@ fn update_ui_text_and_count(
 
     println!("changing text");
     text.sections[0].style.color = palettes::css::GREEN.into();
+}
+
+fn change_marker(mut counter: Query<Mut<Marker>>, inputs: Res<ButtonInput<KeyCode>>) {
+    if inputs.pressed(KeyCode::Space) {
+        for mut marker in counter.iter_mut() {
+            marker.set_changed();
+        }
+    }
 }
