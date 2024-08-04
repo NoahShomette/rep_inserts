@@ -1,0 +1,5 @@
+run a server using `cargo run`
+
+run a another client by using a second terminal and running `cargo run`
+
+If the system is working correctly it should changed the "Added" text to green.
